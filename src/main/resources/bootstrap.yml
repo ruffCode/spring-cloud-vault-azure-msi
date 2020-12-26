@@ -1,0 +1,83 @@
+spring:
+  application:
+    name: contest
+  cloud:
+    vault:
+      enabled: false
+      scheme: http
+      uri: http://10.2.128.8:8200
+      connection-timeout: 5000
+      read-timeout: 15000
+      config:
+        lifecycle:
+          enabled: true
+          min-renewal: 60s
+          expiry-threshold: 10m
+          lease-endpoints: SysLeases
+      authentication: AZURE_MSI
+      azure-msi:
+        role: groomo-role
+        metadata-service: http://169.254.169.254/metadata/instance?api-version=2017-08-01
+        identity-token-service: http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/
+        azure-path: azure
+
+      fail-fast: false
+      consul:
+        enabled: true
+        role: consul-role
+        backend: consul
+        token-property: spring.cloud.consul.token
+
+      kv:
+        enabled: true
+        backend: secret
+        profile-separator: /
+        default-context: ${spring.application.name}
+        application-name: ${spring.application.name}
+    consul:
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
+      discovery:
+        hostname: localhost
+        service-name: contest
+        prefer-ip-address: true
+        register-health-check: false
+        acl-token:
+        fail-fast: true
+      config:
+        acl-token:
+        enabled: true
+        fail-fast: true
+        watch:
+          enabled: true
+    #        prefix: config
+
+    #        profiles: dev, cloud
+
+    loadbalancer:
+      ribbon:
+        enabled: false
+
+
+
+server:
+  port: 3042
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "dev"
+  cloud:
+    vault:
+      scheme: http
+      uri: "http://vault.docker.localhost"
+      authentication: TOKEN
+      token: s.TZPGTn9L7AkmsSg7Q3usPq74
+    consul:
+      config:
+        acl-token: de90ff61-2f19-d8ed-7054-de987d907c88
+      discovery:
+        acl-token: de90ff61-2f19-d8ed-7054-de987d907c88
+
+

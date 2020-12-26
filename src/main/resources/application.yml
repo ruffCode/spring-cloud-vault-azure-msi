@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: contest
+  cloud:
+    vault:
+      enabled: true
+      scheme: http
+      uri: http://10.2.128.8:8200
+      connection-timeout: 5000
+      read-timeout: 15000
+      authentication: AZURE_MSI
+      azure-msi:
+          role: groomo-role
+          metadata-service: http://169.254.169.254/metadata/instance?api-version=2017-08-01
+          identity-token-service: http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/
+          azure-path: azure
+
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: "dev"
+  cloud:
+    vault:
+      scheme: http
+      uri: "http://vault.docker.localhost"
+      authentication: TOKEN
+      token: s.TZPGTn9L7AkmsSg7Q3usPq74
+    consul:
+      config:
+        acl-token: de90ff61-2f19-d8ed-7054-de987d907c88
+      discovery:
+        acl-token: de90ff61-2f19-d8ed-7054-de987d907c88
+
